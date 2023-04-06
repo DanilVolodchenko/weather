@@ -3,8 +3,7 @@ from telegram.error import BadRequest
 from telegram.ext import Filters, Updater, MessageHandler
 
 from exceptions import MessageDoesNotSend
-from weather_info import (get_weather_description,
-                          get_photo_about_weather)
+from weather_info import weather_info
 
 config = dotenv_values('.env')
 
@@ -14,8 +13,8 @@ TELEGRAM_TOKEN: str = config.get('TELEGRAM_TOKEN')
 def get_message(update, context) -> None:
     """Returns message and photo from API."""
     chat = update.effective_chat
-    message = get_weather_description(update.message.text)
-    photo = get_photo_about_weather(update.message.text)
+    message = weather_info(update.message.text).info
+    photo = weather_info(update.message.text).photo
     return send_message(chat, message, photo, context)
 
 
