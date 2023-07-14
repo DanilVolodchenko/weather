@@ -23,7 +23,7 @@ def main():
             logger.error(message)
             logger.exception(error)
     else:
-        logger.error('Нет доступа к токенам!')
+        logger.error('Not access to tokens!')
 
 
 if __name__ == '__main__':

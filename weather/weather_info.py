@@ -33,6 +33,7 @@ def get_gps_coordinates(address: str) -> Coordinates:
     except AttributeError:
         raise AttributeError('Error with location')
     else:
+        print(Coordinates(location.latitude, location.longitude))
         return Coordinates(location.latitude, location.longitude)
 
 
@@ -48,15 +49,13 @@ def get_weather_in_json(coordinates: Coordinates) -> Json:
         URL_NAME,
         params=data,
     )
-    logger.info(weather.json())
     logger.info(weather.url)
     if weather.status_code == requests.codes.ok:
         try:
             response = weather.json()
-        except KeyError:
-            raise KeyError('Key "forecast" is absent')
-        except Exception as error:
-            raise Exception(f'{error}')
+            logger.info(weather.json())
+        except AttributeError:
+            raise AttributeError('Some key is missing')
         else:
             return response
     else:
@@ -76,7 +75,7 @@ def get_current_weather_info(data: Json) -> str:
     except KeyError:
         raise KeyError('Keys "temp_c" or "text" are absent')
     response = (
-        f'Температура: {temperature}\n'
+        f'Температура: {temperature} °C\n'
         f'Погода: {text}\n'
         f'Скорость ветра: {wind_speed} км/ч\n'
     )
@@ -91,17 +90,12 @@ def get_astro_info(data: Json) -> str:
         logger.info(astro)
         sunrise = astro.get('sunrise')
         sunset = astro.get('sunset')
-        moonrise = astro.get('moonrise')
-        moonset = astro.get('moonset')
     except KeyError:
         raise KeyError('Keys "sunrise", "sunset" etc are absent')
     response = (
         '\n'
         f'Восход солнца: {sunrise[:-3]}\n'
         f'Закат солнца: {int(sunset[:2]) + 12}{sunset[2:-3]}\n'
-        '\n'
-        f'Восход луны: {int(moonrise[:2]) + 12}{moonrise[2:-3]}\n'
-        f'Закат луны: {moonset[:-3]}\n'
     )
     return response
 
@@ -119,11 +113,17 @@ def get_photo_about_weather(data: Json) -> str:
 
 
 def weather_info(context: str) -> Weather:
-    coordinates = get_gps_coordinates(context)
-    data = get_weather_in_json(coordinates)
-
-    temp = get_current_weather_info(data)
-    astro = get_astro_info(data)
-    photo = get_photo_about_weather(data)
-    info = temp + astro
-    return Weather(info, photo)
+    try:
+        coordinates = get_gps_coordinates(context)
+        data = get_weather_in_json(coordinates)
+        temp = get_current_weather_info(data)
+        astro = get_astro_info(data)
+        photo = get_photo_about_weather(data)
+        info = temp + astro
+    except AttributeError:
+        error = 'Check name of your city!'
+        photo = ('https://encrypted-tbn0.gstatic.com/images?'
+                 'q=tbn:ANd9GcQuIsbz9QvAixpDw1Rjghft9tusNgYw3alFVx6MkzOo&s')
+        return Weather(error, photo)
+    else:
+        return Weather(info, photo)

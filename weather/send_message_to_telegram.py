@@ -34,5 +34,5 @@ def connect_telegram_bot():
     updater = Updater(token=TELEGRAM_TOKEN)
 
     updater.dispatcher.add_handler(MessageHandler(Filters.text, get_message))
-    updater.start_polling(poll_interval=20.0)
+    updater.start_polling(poll_interval=5.0)
     updater.idle()
