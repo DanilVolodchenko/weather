@@ -29,7 +29,7 @@ def send_message(chat, message, photo, context) -> None:
         raise MessageDoesNotSend(f'Error with message {error}')
 
 
-def connect_telegram_bot():
+def connect_telegram_bot() -> None:
     """Gets information from telegram."""
     updater = Updater(token=TELEGRAM_TOKEN)
 

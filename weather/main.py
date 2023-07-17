@@ -7,7 +7,7 @@ from tokens_access import check_tokens
 
 
 @logger.catch
-def main():
+def main() -> None:
     logger.add(
         sys.stdout,
         level='DEBUG',

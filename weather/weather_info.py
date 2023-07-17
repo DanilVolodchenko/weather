@@ -70,10 +70,12 @@ def get_current_weather_info(data: Json) -> str:
     try:
         current_weather = data['current']
         temperature = current_weather.get('temp_c')
-        text = current_weather.get('condition').get('text')
+        text = current_weather['condition'].get('text')
         wind_speed = current_weather.get('wind_kph')
     except KeyError:
         raise KeyError('Keys "temp_c" or "text" are absent')
+    except TypeError:
+        raise TypeError('Key condition is absent')
     response = (
         f'Температура: {temperature} °C\n'
         f'Погода: {text}\n'
@@ -91,7 +93,9 @@ def get_astro_info(data: Json) -> str:
         sunrise = astro.get('sunrise')
         sunset = astro.get('sunset')
     except KeyError:
-        raise KeyError('Keys "sunrise", "sunset" etc are absent')
+        raise KeyError('Keys "sunrise" are absent')
+    except TypeError:
+        raise TypeError('TypeError')
     response = (
         '\n'
         f'Восход солнца: {sunrise[:-3]}\n'
@@ -101,13 +105,14 @@ def get_astro_info(data: Json) -> str:
 
 
 def get_photo_about_weather(data: Json) -> str:
-    """Gets city in str
-    and returns icon's url."""
+    """Gets city in str and returns icon's url."""
     try:
         condition = data['current'].get('condition')
         icon = condition['icon']
     except KeyError:
-        raise KeyError('Key condition or icon are absent')
+        raise KeyError('Key current or icon are absent')
+    except TypeError:
+        raise TypeError('Key condition is absent')
     else:
         return 'https:' + icon
 
@@ -120,8 +125,9 @@ def weather_info(context: str) -> Weather:
         astro = get_astro_info(data)
         photo = get_photo_about_weather(data)
         info = temp + astro
-    except AttributeError:
-        error = 'Check name of your city!'
+    except Exception as error:
+        logger.error(error)
+        error = 'Oops, error! Check if your city name is correct'
         photo = ('https://encrypted-tbn0.gstatic.com/images?'
                  'q=tbn:ANd9GcQuIsbz9QvAixpDw1Rjghft9tusNgYw3alFVx6MkzOo&s')
         return Weather(error, photo)
