@@ -1,8 +1,10 @@
 from dotenv import dotenv_values
-from telegram.error import BadRequest
-from telegram.ext import Filters, Updater, MessageHandler
-
 from exceptions import MessageDoesNotSend
+from telegram.chat import Chat
+from telegram.error import BadRequest
+from telegram.ext import Filters, MessageHandler, Updater
+from telegram.ext.callbackcontext import CallbackContext
+from telegram.update import Update
 from weather_info import weather_info
 
 config = dotenv_values('.env')
@@ -10,7 +12,7 @@ config = dotenv_values('.env')
 TELEGRAM_TOKEN: str = config.get('TELEGRAM_TOKEN')
 
 
-def get_message(update, context) -> None:
+def get_message(update: Update, context: CallbackContext) -> None:
     """Returns message and photo from API."""
     chat = update.effective_chat
     message = weather_info(update.message.text).info
@@ -18,7 +20,10 @@ def get_message(update, context) -> None:
     return send_message(chat, message, photo, context)
 
 
-def send_message(chat, message, photo, context) -> None:
+def send_message(chat: Chat,
+                 message: str,
+                 photo: str,
+                 context: CallbackContext) -> None:
     """Sends info about weather in telegram."""
     try:
         context.bot.send_message(chat_id=chat.id, text=message)

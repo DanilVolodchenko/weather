@@ -76,4 +76,16 @@
 [danil.volodchenko@inbox.ru](mailto:danil.volodchenko@inbox.ru)
 и в [telegram](https://t.me/VolodchenkoDanil).
 
+### Стек технологий
+
+Данный проект написан на языке программирования `Python` по PEP8, для 
+проверки правильности написания применяется `flake8` и `flake8-isort`.
+Логирования кода осуществляется с помощью `loguru`, тестирование - `pytest`,
+отправка telegram сообщений реализована на основе библиотеки `python-telegram-bot`,
+все приватные данные находятся в переменных окружения благодаря `python-dotenv` 
+и конечно же `type hinting` для читаемости кода.
+
+
+
 ![Фото котика)](https://koshka.top/uploads/posts/2021-12/1640238604_2-koshka-top-p-kotika-srisovki-2.png)
+

@@ -1,7 +1,6 @@
 import sys
 
 from loguru import logger
-
 from send_message_to_telegram import connect_telegram_bot
 from tokens_access import check_tokens
 
