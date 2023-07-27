@@ -1,0 +1,5 @@
+version: '3'
+
+services:
+  weather:
+    image: danilvolodchenko/weather:v1

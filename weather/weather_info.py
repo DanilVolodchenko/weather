@@ -37,7 +37,7 @@ def get_gps_coordinates(address: str) -> Coordinates:
         return Coordinates(location.latitude, location.longitude)
 
 
-def get_weather_in_json(coordinates: Coordinates) -> Json:
+def get_weather_data(coordinates: Coordinates) -> Json:
     """Gets data in json and returns
      data of weather in json."""
     data = {
@@ -120,14 +120,14 @@ def get_photo_about_weather(data: Json) -> str:
 def weather_info(context: str) -> Weather:
     try:
         coordinates = get_gps_coordinates(context)
-        data = get_weather_in_json(coordinates)
+        data = get_weather_data(coordinates)
         temp = get_current_weather_info(data)
         astro = get_astro_info(data)
         photo = get_photo_about_weather(data)
         info = temp + astro
     except Exception as error:
         logger.error(error)
-        error = 'Oops, error! Check if your city name is correct'
+        error = 'Oops, something went wrong!'
         photo = ('https://encrypted-tbn0.gstatic.com/images?'
                  'q=tbn:ANd9GcQuIsbz9QvAixpDw1Rjghft9tusNgYw3alFVx6MkzOo&s')
         return Weather(error, photo)

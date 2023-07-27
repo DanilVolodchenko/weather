@@ -1,7 +1,9 @@
 import pytest
+from requests import Timeout, RequestException
 from unittest.mock import Mock, patch
 
 from weather_info import (get_current_weather_info,
+                          get_weather_data,
                           get_gps_coordinates,
                           get_astro_info,
                           get_photo_about_weather,
@@ -47,6 +49,20 @@ class TestGetGpsCoordinates:
 
         with pytest.raises(AttributeError):
             get_gps_coordinates(does_not_exist_address)
+
+
+class TestGetWeatherInJson:
+
+    @patch('weather_info.requests')
+    def test_get_weather_in_json_exception(self, requests_mock):
+        """Raises TimeOut and RequestException exceptions."""
+        requests_mock.get.side_effect = [Timeout, RequestException]
+
+        with pytest.raises(Timeout):
+            get_weather_data(Mock())
+
+        with pytest.raises(RequestException):
+            get_weather_data(Mock())
 
 
 class TestGetCurrentWeatherInfo:
@@ -188,11 +204,11 @@ class TestWeatherInfo:
     @patch('weather_info.get_photo_about_weather')
     @patch('weather_info.get_astro_info')
     @patch('weather_info.get_current_weather_info')
-    @patch('weather_info.get_weather_in_json')
+    @patch('weather_info.get_weather_data')
     @patch('weather_info.get_gps_coordinates')
     def test_weather_info(self,
                           mock_get_gps_coordinates,
-                          mock_get_weather_in_json,
+                          mock_get_weather_data,
                           mock_get_current_weather_info,
                           mock_get_astro_info,
                           mock_get_photo_about_weather
@@ -200,7 +216,7 @@ class TestWeatherInfo:
         """Test response of the weather_info function."""
         mock_get_gps_coordinates.return_value = Coordinates(54.96781445,
                                                             82.95159894278376)
-        mock_get_weather_in_json.return_value = {
+        get_weather_data.return_value = {
             'current': {'temp_c': 14.0,
                         'condition': {'text': 'Дымка',
                                       'icon': '//cdn.weatherapi.com/weather/64x64/night/143.png'},
@@ -244,6 +260,6 @@ class TestWeatherInfo:
         result = weather_info('Does not exist city')
 
         assert isinstance(result, Weather), ''
-        assert result.info == 'Oops, error! Check if your city name is correct'
+        assert result.info == 'Oops, something went wrong!'
         assert result.photo == 'https://encrypted-tbn0.gstatic.com/' \
                                'images?q=tbn:ANd9GcQuIsbz9QvAixpDw1Rjghft9tusNgYw3alFVx6MkzOo&s'

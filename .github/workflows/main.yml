@@ -1,4 +1,4 @@
-name: Main Kittygram Workflow
+name: Main Weather Workflow
 
 on:
   push:
